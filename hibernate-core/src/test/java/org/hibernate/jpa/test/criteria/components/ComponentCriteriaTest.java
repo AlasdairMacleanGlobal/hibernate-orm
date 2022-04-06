@@ -156,7 +156,7 @@ public class ComponentCriteriaTest extends BaseEntityManagerFunctionalTestCase {
 	}
 
 	@Test
-	@TestForIssue( jiraKey = "HHH-???" )
+	@TestForIssue( jiraKey = "HHH-15185" )
 	public void testParamNameClashesWithImplicitParamName() { // needs a better name
 		EntityManager em = getOrCreateEntityManager();
 		em.getTransaction().begin();
