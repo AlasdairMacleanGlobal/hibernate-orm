@@ -14,6 +14,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Root;
 
 import org.junit.Assert;
@@ -150,6 +151,23 @@ public class ComponentCriteriaTest extends BaseEntityManagerFunctionalTestCase {
 		root = cq.from( Client.class );
 		cq.where( cb.equal( cb.upper( root.get( Client_.name ).get( Name_.lastName ) ),"test" ) );
 		em.createQuery( cq ).getResultList();
+		em.getTransaction().commit();
+		em.close();
+	}
+
+	@Test
+	@TestForIssue( jiraKey = "HHH-???" )
+	public void testParamNameClashesWithImplicitParamName() { // needs a better name
+		EntityManager em = getOrCreateEntityManager();
+		em.getTransaction().begin();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Client> cq = cb.createQuery( Client.class );
+		Root<Client> root = cq.from( Client.class );
+
+		ParameterExpression<String> nameParameter = cb.parameter(String.class, "param0");
+		cq.where( cb.like( root.get( Client_.name ).get( Name_.lastName ),nameParameter , '\\'));
+		em.createQuery( cq ).setParameter("param0", "test").getResultList();
+
 		em.getTransaction().commit();
 		em.close();
 	}
